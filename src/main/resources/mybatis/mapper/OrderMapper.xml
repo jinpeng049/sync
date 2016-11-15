@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yixiang.np.dao.PltmOrderDao">
+
+    <select id="queryOrder" resultType="com.yixiang.np.model.vo.OrderVo" >
+    	SELECT a.id, a.order_number as orderNumber, a.order_status as orderStatus, a.purch_quantity as purchQuantity, a.unit_price as sellingPrice,
+    			a.pay_price as sum, a.ticket_limit_time as ticketLimitTime, a.flight_number as toAirlineNumber, a.create_time as orderCreateTime,
+				a.departure_city as toStartAirportName, a.departure_code as toStartAirportCode, a.arrival_city as toEndAirportName,
+				a.arrival_code as toEndAirportCode, a.departure_date as toStartDate, a.departure_time as toStartTime,a.interval_day as toIntervalDay, 
+				a.arrival_time as toEndTime, a.pay_time_out as payTimeout, b.flight_number as backAirlineNumber, b.departure_city as 
+				backStartAirportName, b.departure_code as backStartAirportCode, b.arrival_city as backEndAirportName,b.interval_day as backIntervalDay,
+				b.arrival_code as backEndAirportCode, b.departure_date as backStartDate, b.departure_time as backStartTime, b.arrival_time as backEndTime 
+		from (SELECT po.id, po.order_number, po.order_status, po.purch_quantity, po.unit_price, po.ticket_limit_time, po.pay_price, po.create_time,po.pay_time_out, to_pof.flight_number,
+				to_pof.departure_city, to_pof.departure_code, to_pof.arrival_city, to_pof.arrival_code, to_pof.departure_date, to_pof.departure_time, to_pof.arrival_time,to_pof.interval_day 
+						from (SELECT * from pltm_order  
+										<where>
+											<if test="orderNumber != null and orderNumber != ''">
+								                order_number like CONCAT('%','${orderNumber}','%') 
+								            </if>
+											<if test="toStartAirportCode != null and toStartAirportCode != ''">
+								               and to_start_airport = #{toStartAirportCode}
+								            </if>
+											<if test="toEndAirportCode != null and toEndAirportCode != ''">
+								               and to_end_airport = #{toEndAirportCode}
+								            </if>
+											<if test="toStartDate != null and toStartDate != ''">
+								               and to_start_date >= #{toStartDate}
+								            </if>
+											<if test="toEndDate != null and toEndDate != ''">
+								               and to_start_date <![CDATA[<]]>= #{toEndDate}
+								            </if>
+											<if test="orderStatus != '-1'.toString() and orderStatus != null ">
+								               and order_status = #{orderStatus}
+								            </if>
+											<if test="createUserId != null ">
+								               and create_user = #{createUserId}
+								            </if>
+										</where>
+						) as po 
+						, pltm_order_flight as to_pof where po.order_number = to_pof.order_number and to_pof.flight_segment = 1) as a 
+			, pltm_order_flight as b where a.order_number = b.order_number and b.flight_segment = 2 order by a.order_number desc
+    
+    </select>
+    
+    <select id="queryIsCanceled" resultType="int">
+    	select order_status from pltm_order where order_number = #{orderNumber}
+    </select>
+
+	<update id="updateOrderFinanceStatus" parameterType="java.lang.String">
+		update pltm_order set finance_status = 3
+		where order_number = #{orderNumber}
+	</update>
+
+
+    <update id="orderCancel">
+    	update pltm_order set order_status = 5 where order_number = #{orderNumber}
+    </update>
+    
+    <select id="queryPssOrderNum" resultType="string">
+    	SELECT pss_order_number from pltm_order where order_number =#{orderNumber}
+    </select>
+    <select id="queryPltmOrderNum" resultType="string">
+    	SELECT order_number from pltm_order where pss_order_number =#{orderNumber}
+    </select>
+
+	<select id="queryOrderDetail" resultType="com.yixiang.np.model.vo.PltmOrderVo">
+		SELECT a.id, 
+			a.order_number AS orderNumber,  
+			a.pss_order_number as pssOrderNumber,
+			a.purch_quantity AS purchQuantity, 
+			a.travel_days AS travelDays,
+			a.unit_price AS	unitPrice,
+			a.luggage_info AS luggageInfo,
+			a.ticket_limit_time AS ticketLimitTime,
+			a.pay_price AS payPrice,  
+			a.pay_name AS payName,
+			a.pay_account AS payAccount,
+			a.pay_time AS payTime,
+			a.order_status AS orderStatus,
+			a.create_time AS createTime,
+			a.to_start_date AS toStartDate,
+			a.to_start_airport AS toStartAirportCode,
+			a.to_end_airport AS toEndAirportCode,
+			a.ticket_loss AS ticketLoss,
+			a.ticket_rate AS ticketRate,
+			a1.airport_cn AS toStartAirport,
+			a2.airport_cn AS toEndAirport
+		FROM pltm_order a
+		LEFT JOIN base_airport_info a1 ON a1.airport_code=a.to_start_airport
+		LEFT JOIN base_airport_info a2 ON a2.airport_code=a.to_end_airport
+		WHERE a.order_number=#{orderNumber} 
+	</select>
+	<select id="queryNpOrderDetail" resultType="com.yixiang.np.model.vo.NpOrderVo">
+		SELECT a.id, 
+			a.order_number AS orderNumber,  
+			a.pss_order_number as pssOrderNumber,
+			a.purch_quantity AS purchQuantity, 
+			a.travel_days AS travelDays,
+			a.unit_price AS	unitPrice,
+			a.luggage_info AS luggageInfo,
+			a.ticket_limit_time AS ticketLimitTime,
+			a.pay_price AS payPrice,  
+			a.pay_name AS payName,
+			a.pay_account AS payAccount,
+			DATE_FORMAT(a.pay_time, '%Y-%m-%d %H:%i:%s') AS payTime,
+			a.order_status AS orderStatus,
+			a.create_time AS createTime,
+			DATE_FORMAT(a.to_start_date, '%Y-%m-%d') AS toStartDate,
+			a.to_start_airport AS toStartAirportCode,
+			a.to_end_airport AS toEndAirportCode,
+			a1.airport_cn AS toStartAirport,
+			a2.airport_cn AS toEndAirport,
+			a.supplier_name supplier,
+			a.purchase_name purchase,
+			a.finance_status financeStatus
+		FROM pltm_order a
+		LEFT JOIN base_airport_info a1 ON a1.airport_code=a.to_start_airport
+		LEFT JOIN base_airport_info a2 ON a2.airport_code=a.to_end_airport
+		WHERE a.order_number=#{orderNumber} 
+	</select>
+	<select id="queryOrderPaymentByNo"  resultType="com.yixiang.np.model.vo.PltmPaymentOrderVo">
+		SELECT 
+		t1.pay_no payNo,
+		t1.pay_money payMoney,
+		t1.pay_account payAccount,
+		t1.pay_name payName,
+		t1.pay_time payTime,
+		IFNULL(ROUND(t3.purch_quantity * t3.unit_price,2),0) actualMoney,
+		t5.name purchase
+		FROM pltm_order t3 
+		LEFT JOIN pltm_payment_order t2 ON t3.order_number=t2.order_no
+		LEFT JOIN pltm_payment t1 ON  t2.pay_no=t1.pay_no
+		LEFT JOIN sys_user t4 ON t4.id=t3.create_user
+		LEFT JOIN sys_organization t5 ON t5.id=t4.organization_id
+		WHERE t3.order_number=#{orderNumber} and t1.status>-1
+	</select>
+	<select id="queryFlightByOrderid" resultType="com.yixiang.np.model.vo.OrderFlightVo">
+		SELECT 
+			t.id,
+			t.order_number orderNumber,
+			t.flight_id flightId,
+			t.flight_number flightNumber,
+			t.flight_segment flightSegment,
+			t.departure_city departureCity,
+			t.arrival_city arrivalCity,
+			t.departure_code departureCode,
+			t.arrival_code arrivalCode,
+			t.interval_day intervalDay,
+			t.departure_date departureDate,
+			t.departure_time departureTime,
+			t.arrival_time arrivalTime,
+			t.cabin cabin,
+			t.departure_terminal departureTerminal,
+			t.arrival_terminal arrivalTerminal,
+			t.create_time createTime
+		FROM pltm_order_flight t
+		WHERE t.order_number=#{orderNumber} 
+		order by t.id asc
+	</select>
+	
+	<select id="queryPassenger" resultType="com.yixiang.np.model.vo.OrderPassenger">
+		SELECT id,
+		   order_number orderNumber,
+		   ticket_number ticketNumber,
+		   last_name_en lastName_en,
+		   first_name_en firstName_en,
+		   last_name_cn lastName_cn,
+		   first_name_cn firstName_cn,
+		   sex,
+		   passage_type passageType,
+		   doc_type docType,
+		   doc_id docId,
+		   DATE_FORMAT(doc_expire_date, '%Y-%m-%d') docExpireDate,
+		   DATE_FORMAT(birth_date, '%Y-%m-%d') birthDate,
+		   mobile,
+		   nationality,
+		   issue_country issueCountry,
+		   grogshop,
+		   through_traffic throughTraffic,
+		   remark
+		FROM pltm_order_passenger 
+		WHERE order_number=#{orderNumber} 
+	</select>
+	<select id="queryPssPassenger" resultType="com.yixiang.np.model.vo.PssOrderPassenger">
+		SELECT id,
+		   order_number orderNumber,
+		   ticket_number ticketNumber,
+		   last_name_en englishSurname,
+		   first_name_en englishName,
+		   last_name_cn chineseSurname,
+		   first_name_cn chineseName,
+		   sex gender,
+		   passage_type as type,
+		   doc_type certificateType,
+		   doc_id certificateNumber,
+		   DATE_FORMAT(doc_expire_date, '%Y-%m-%d')  certificateExpireDate,
+		   DATE_FORMAT(birth_date, '%Y-%m-%d') birthDate,
+		   mobile,
+		   nationality country,
+		   issue_country issuingCountry,
+		   grogshop,
+		   through_traffic throughTraffic,
+		   remark
+		FROM pltm_order_passenger 
+		WHERE order_number=#{orderNumber} 
+	</select>
+	<select id="getpassenger" resultType="com.yixiang.np.model.vo.OrderPassenger">
+		SELECT id,
+		   order_number orderNumber,
+		   ticket_number ticketNumber,
+		   last_name_en lastName_en,
+		   first_name_en firstName_en,
+		   last_name_cn lastName_cn,
+		   first_name_cn firstName_cn,
+		   sex,
+		   passage_type passageType,
+		   doc_type docType,
+		   doc_id docId,
+		   DATE_FORMAT(doc_expire_date, '%Y-%m-%d') docExpireDate,
+		   DATE_FORMAT(birth_date, '%Y-%m-%d') birthDate,
+		   mobile,
+		   nationality,
+		   issue_country issueCountry,
+		   grogshop,
+		   through_traffic throughTraffic,
+		   remark
+		FROM pltm_order_passenger 
+		WHERE id=#{id} 
+	</select>
+	<update id="updatePayInfo" parameterType="PltmPayment">
+		update pltm_order set 
+		order_status=#{status},
+		finance_status=#{financeStatus},
+		pay_price=purch_quantity*unit_price-purch_quantity*unit_price*charges,
+		pay_name=#{payName},
+		pay_account=#{payAccount},
+		pay_user_id=#{lastUpdateUserid},
+		pay_time=now(),
+		last_modify_time=#{lastUpdateTime},
+		last_modify_person=#{lastUpdateUserid}
+		where order_number=#{orderNumbers} 
+	</update>
+	<update id="orderTicket" parameterType="PltmOrder">
+		update pltm_order set 
+		pay_price=#{payPrice},
+		pay_time=#{payTime},
+		order_status=#{orderStatus},
+		last_modify_time=#{lastModifyTime},
+		last_modify_person=#{lastModifyPerson},
+		passenger_uptime=now()
+		where order_number=#{orderNumber} 
+	</update>
+	<insert id="passengerAdd" parameterType="OrderPassenger">
+		insert into pltm_order_passenger(order_number,ticket_number,last_name_en,first_name_en,last_name_cn,first_name_cn,sex,passage_type,
+		doc_type,doc_id,doc_expire_date,birth_date,mobile,create_user,create_time,last_modify_time,last_modify_person,
+		nationality,issue_country,grogshop,through_traffic,remark)
+		values(#{orderNumber},#{ticketNumber},#{lastName_en},#{firstName_en},#{lastName_cn},#{firstName_cn},#{sex},#{passageType},
+		#{docType},#{docId},#{docExpireDate},#{birthDate},#{mobile},#{createUser},#{createTime},#{lastModifyTime},#{lastModifyPerson},
+		#{nationality},#{issueCountry},#{grogshop},#{throughTraffic},#{remark})
+	</insert>
+	<update id="passengerEdit" parameterType="OrderPassenger">
+		update pltm_order_passenger set 
+		ticket_number=#{ticketNumber},
+		last_name_en=#{lastName_en},
+		first_name_en=#{firstName_en},
+		last_name_cn=#{lastName_cn},
+		first_name_cn=#{firstName_cn},
+		sex=#{sex},
+		passage_type=#{passageType},
+		doc_type=#{docType},
+		doc_id=#{docId},
+		doc_expire_date=#{docExpireDate},
+		birth_date=#{birthDate},
+		mobile=#{mobile},
+		nationality=#{nationality},
+		issue_country=#{issueCountry},
+		grogshop=#{grogshop},
+		through_traffic=#{throughTraffic},
+		remark=#{remark},
+		last_modify_time=#{lastModifyTime},
+		last_modify_person=#{lastModifyPerson}
+		where id=#{id} 
+	</update>
+	<delete id="passengerDel">
+		delete from pltm_order_passenger where id=#{id}
+	</delete>
+	
+	<update id="setRemark">
+		update pltm_order set cancel_remarks = #{remarks} where order_number = #{orderNumber}
+	</update>
+</mapper>

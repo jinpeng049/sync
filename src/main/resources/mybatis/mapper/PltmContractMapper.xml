@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yixiang.np.dao.PltmOrderContractDao">
+    <insert id="create" parameterType="com.yixiang.np.model.vo.PltmContractVo">
+        insert into pltm_order_contract (contract_no, route_id,
+        dept_flight, arr_flight, charter_type,
+        seat_class, dept_airport, arr_airport,
+        dept_airportcode, arr_airportcode, dept_starttime,
+        dept_endtime, arr_starttime, arr_endtime,
+        dept_intervalday, arr_intervalday, seat_count,
+        flight_count, total_price, deposit,
+        pay_overtime, ticket_overtime, status,
+        customer_id, customer_name, create_userid,
+        old_deposit,product_list,
+        supplier_id,supplier_name,
+        create_time, last_modifytime)
+        values (#{contractNo,jdbcType=VARCHAR}, #{routeId,jdbcType=BIGINT},
+        #{deptFlight,jdbcType=VARCHAR}, #{arrFlight,jdbcType=VARCHAR}, #{charterType,jdbcType=VARCHAR},
+        #{seatClass,jdbcType=VARCHAR}, #{deptAirport,jdbcType=VARCHAR}, #{arrAirport,jdbcType=VARCHAR},
+        #{deptAirportcode,jdbcType=VARCHAR}, #{arrAirportcode,jdbcType=VARCHAR}, #{deptStarttime,jdbcType=VARCHAR},
+        #{deptEndtime,jdbcType=VARCHAR}, #{arrStarttime,jdbcType=VARCHAR}, #{arrEndtime,jdbcType=VARCHAR},
+        #{deptIntervalday,jdbcType=INTEGER}, #{arrIntervalday,jdbcType=INTEGER}, #{seatCount,jdbcType=INTEGER},
+        #{flightCount,jdbcType=INTEGER}, #{totalPrice,jdbcType=REAL}, #{deposit,jdbcType=REAL},
+        #{payOvertime,jdbcType=TIMESTAMP}, #{ticketOvertime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER},
+        #{customerId,jdbcType=INTEGER}, #{customerName,jdbcType=VARCHAR}, #{createUserid,jdbcType=INTEGER},
+        #{oldDeposit,jdbcType=REAL}, #{productList,jdbcType=VARCHAR},
+        #{supplierId,jdbcType=INTEGER}, #{supplierName,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{lastModifytime,jdbcType=TIMESTAMP})
+    </insert>
+    <delete id="deleteByContractNumber" parameterType="java.lang.String">
+        delete from pltm_order_contract
+        where contract_no = #{contractNo,jdbcType=VARCHAR}
+    </delete>
+
+    <update id="updatePssContractNo">
+        update pltm_order_contract
+        <set>
+            <if test="pssContractNo != null and pssContractNo != ''">
+                pss_contract_no = #{pssContractNo,jdbcType=VARCHAR}
+            </if>
+        </set>
+        <where>
+            <if test="contractNo != null">
+                contract_no = #{contractNo,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
+    <select id="queryPssContractNoByStatus" resultType="java.lang.String">
+        select ptm.pss_contract_no from pltm_order_contract ptm
+        <where>
+            <if test="status != null">
+                ptm.status = #{status,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateStatusAndTimeByContractNo">
+        update pltm_order_contract
+        <set>
+            <if test="status != null">
+                status = #{status, jdbcType=INTEGER},
+            </if>
+            <if test="payOverTime != null">
+                pay_overtime = #{payOverTime, jdbcType=TIMESTAMP}
+            </if>
+        </set>
+
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no = #{contractNo, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
+    <update id="updateStatusByContractNo">
+        update pltm_order_contract
+        <if test="status != null">
+            <set>
+                status = #{status, jdbcType=INTEGER}
+            </set>
+        </if>
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no = #{contractNo, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+</mapper>

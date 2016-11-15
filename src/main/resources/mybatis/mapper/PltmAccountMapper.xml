@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yixiang.np.dao.PltmAccountDao">
+    <resultMap id="BaseResultMap" type="PltmAccount">
+        <id column="pltmAccount_id" property="id" jdbcType="BIGINT"/>
+        <result column="pltmAccount_type" property="type" jdbcType="TINYINT"/>
+        <result column="pltmAccount_account_number" property="accountNumber" jdbcType="VARCHAR"/>
+        <result column="pltmAccount_account_name" property="accountName" jdbcType="VARCHAR"/>
+        <result column="pltmAccount_money" property="money" jdbcType="FLOAT"/>
+        <result column="pltmAccount_receivable" property="receivable" jdbcType="FLOAT"/>
+        <result column="pltmAccount_stay_present" property="stayPresent" jdbcType="FLOAT"/>
+        <result column="pltmAccount_already_mentioned" property="alreadyMentioned" jdbcType="FLOAT"/>
+        <result column="pltmAccount_organization_id" property="organizationId" jdbcType="INTEGER"/>
+        <result column="pltmAccount_organization_name" property="organizationName" jdbcType="VARCHAR"/>
+        <result column="pltmAccount_create_user" property="createUser" jdbcType="INTEGER"/>
+        <result column="pltmAccount_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="pltmAccount_last_modify_time" property="lastModifyTime" jdbcType="TIMESTAMP"/>
+        <result column="pltmAccount_last_modify_person" property="lastModifyPerson" jdbcType="INTEGER"/>
+        <result column="pltmAccount_freeze_amount" property="freezeAmount" jdbcType="FLOAT"/>
+        <result column="pltmAccount_available_balance" property="availableBalance" jdbcType="FLOAT"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        pltmAccount.id as pltmAccount_id, pltmAccount.type as pltmAccount_type, pltmAccount.account_number as
+        pltmAccount_account_number,
+        pltmAccount.account_name as pltmAccount_account_name, pltmAccount.money as pltmAccount_money,
+        pltmAccount.receivable as pltmAccount_receivable, pltmAccount.stay_present as pltmAccount_stay_present,
+        pltmAccount.already_mentioned as pltmAccount_already_mentioned, pltmAccount.organization_id as
+        pltmAccount_organization_id,
+        pltmAccount.organization_name as pltmAccount_organization_name, pltmAccount.create_user as
+        pltmAccount_create_user,
+        pltmAccount.create_time as pltmAccount_create_time, pltmAccount.last_modify_time as
+        pltmAccount_last_modify_time,
+        pltmAccount.last_modify_person as pltmAccount_last_modify_person,
+        pltmAccount.freeze_amount as pltmAccount_freeze_amount,
+        pltmAccount.available_balance as pltmAccount_available_balance
+    </sql>
+    <insert id="create" parameterType="PltmAccount" useGeneratedKeys="true" keyProperty="id">
+        insert into pltm_account (type, account_number,
+        account_name, money, receivable,
+        stay_present, already_mentioned, organization_id,
+        organization_name, create_user, create_time,
+        last_modify_time, last_modify_person)
+        values (#{type,jdbcType=TINYINT}, #{accountNumber,jdbcType=VARCHAR},
+        #{accountName,jdbcType=VARCHAR}, #{money,jdbcType=FLOAT}, #{receivable,jdbcType=FLOAT},
+        #{stayPresent,jdbcType=FLOAT}, #{alreadyMentioned,jdbcType=FLOAT}, #{organizationId,jdbcType=INTEGER},
+        #{organizationName,jdbcType=VARCHAR}, #{createUser,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+        #{lastModifyTime,jdbcType=TIMESTAMP}, #{lastModifyPerson,jdbcType=INTEGER})
+    </insert>
+
+    <select id="selectBySupplierId" resultType="PltmAccount" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from pltm_account pltmAccount
+        where pltmAccount.organization_id = #{organizationId,jdbcType=INTEGER}
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="PltmAccount">
+        update pltm_account
+        <set>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
+            <if test="accountNumber != null">
+                account_number = #{accountNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="accountName != null">
+                account_name = #{accountName,jdbcType=VARCHAR},
+            </if>
+            <if test="money != null">
+                money = #{money,jdbcType=FLOAT},
+            </if>
+            <if test="receivable != null">
+                receivable = #{receivable,jdbcType=FLOAT},
+            </if>
+            <if test="stayPresent != null">
+                stay_present = #{stayPresent,jdbcType=FLOAT},
+            </if>
+            <if test="alreadyMentioned != null">
+                already_mentioned = #{alreadyMentioned,jdbcType=FLOAT},
+            </if>
+            <if test="organizationId != null">
+                organization_id = #{organizationId,jdbcType=INTEGER},
+            </if>
+            <if test="organizationName != null">
+                organization_name = #{organizationName,jdbcType=VARCHAR},
+            </if>
+            <if test="createUser != null">
+                create_user = #{createUser,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="lastModifyTime != null">
+                last_modify_time = #{lastModifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="lastModifyPerson != null">
+                last_modify_person = #{lastModifyPerson,jdbcType=INTEGER},
+            </if>
+            <if test="freezeAmount != null">
+                freeze_amount = #{freezeAmount,jdbcType=FLOAT},
+            </if>
+            <if test="availableBalance != null">
+                available_balance = #{availableBalance,jdbcType=FLOAT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

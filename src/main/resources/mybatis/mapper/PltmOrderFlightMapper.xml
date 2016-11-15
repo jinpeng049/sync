@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yixiang.np.dao.PltmOrderFlightDao" >
+  <resultMap id="BaseResultMap" type="PltmOrderFlight" >
+    <id column="pltmOrderFlight_id" property="id" jdbcType="BIGINT" />
+    <result column="pltmOrderFlight_order_number" property="orderNumber" jdbcType="CHAR" />
+    <result column="pltmOrderFlight_flight_id" property="flightId" jdbcType="INTEGER" />
+    <result column="pltmOrderFlight_flight_number" property="flightNumber" jdbcType="VARCHAR" />
+    <result column="pltmOrderFlight_flight_segment" property="flightSegment" jdbcType="TINYINT" />
+    <result column="pltmOrderFlight_departure_city" property="departureCity" jdbcType="VARCHAR" />
+    <result column="pltmOrderFlight_arrival_city" property="arrivalCity" jdbcType="VARCHAR" />
+    <result column="pltmOrderFlight_interval_day" property="intervalDay" jdbcType="TINYINT" />
+    <result column="pltmOrderFlight_departure_date" property="departureDate" jdbcType="DATE" />
+    <result column="pltmOrderFlight_departure_time" property="departureTime" jdbcType="CHAR" />
+    <result column="pltmOrderFlight_arrival_time" property="arrivalTime" jdbcType="CHAR" />
+    <result column="pltmOrderFlight_cabin" property="cabin" jdbcType="VARCHAR" />
+    <result column="pltmOrderFlight_departure_terminal" property="departureTerminal" jdbcType="VARCHAR" />
+    <result column="pltmOrderFlight_arrival_terminal" property="arrivalTerminal" jdbcType="VARCHAR" />
+    <result column="pltmOrderFlight_create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="pltmOrderFlight_create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="pltmOrderFlight_last_modify_time" property="lastModifyTime" jdbcType="TIMESTAMP" />
+    <result column="pltmOrderFlight_last_modify_person" property="lastModifyPerson" jdbcType="INTEGER" />
+    <result column="pltmOrderFlight_departure_code" property="departureCode" jdbcType="VARCHAR" />
+    <result column="pltmOrderFlight_arrival_code" property="arrivalCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    pltmOrderFlight.id as pltmOrderFlight_id, pltmOrderFlight.order_number as pltmOrderFlight_order_number, 
+    pltmOrderFlight.flight_id as pltmOrderFlight_flight_id, pltmOrderFlight.flight_number as pltmOrderFlight_flight_number, 
+    pltmOrderFlight.flight_segment as pltmOrderFlight_flight_segment, pltmOrderFlight.departure_city as pltmOrderFlight_departure_city, 
+    pltmOrderFlight.arrival_city as pltmOrderFlight_arrival_city, pltmOrderFlight.interval_day as pltmOrderFlight_interval_day, 
+    pltmOrderFlight.departure_date as pltmOrderFlight_departure_date, pltmOrderFlight.departure_time as pltmOrderFlight_departure_time, 
+    pltmOrderFlight.arrival_time as pltmOrderFlight_arrival_time, pltmOrderFlight.cabin as pltmOrderFlight_cabin, 
+    pltmOrderFlight.departure_terminal as pltmOrderFlight_departure_terminal, pltmOrderFlight.arrival_terminal as pltmOrderFlight_arrival_terminal, 
+    pltmOrderFlight.create_user as pltmOrderFlight_create_user, pltmOrderFlight.create_time as pltmOrderFlight_create_time, 
+    pltmOrderFlight.last_modify_time as pltmOrderFlight_last_modify_time, pltmOrderFlight.last_modify_person as pltmOrderFlight_last_modify_person,
+    pltmOrderFlight.departure_code as pltmOrderFlight_departure_code, pltmOrderFlight.arrival_code as pltmOrderFlight_arrival_code
+  </sql>
+  <insert id="create" useGeneratedKeys="true" keyProperty="id" >
+    insert into pltm_order_flight (order_number, flight_id,
+      flight_number, flight_segment, departure_city,
+      arrival_city, interval_day, departure_date, 
+      departure_time, arrival_time, cabin, 
+      departure_terminal, arrival_terminal, create_user, 
+      create_time, last_modify_time, last_modify_person,
+      departure_code, arrival_code
+      )
+    values (#{orderNumber,jdbcType=CHAR}, #{flightId,jdbcType=INTEGER},
+      #{flightNumber,jdbcType=VARCHAR}, #{flightSegment,jdbcType=TINYINT}, #{departureCity,jdbcType=VARCHAR}, 
+      #{arrivalCity,jdbcType=VARCHAR}, #{intervalDay,jdbcType=TINYINT}, #{departureDate,jdbcType=DATE}, 
+      #{departureTime,jdbcType=CHAR}, #{arrivalTime,jdbcType=CHAR}, #{cabin,jdbcType=VARCHAR}, 
+      #{departureTerminal,jdbcType=VARCHAR}, #{arrivalTerminal,jdbcType=VARCHAR}, #{createUser,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{lastModifyTime,jdbcType=TIMESTAMP}, #{lastModifyPerson,jdbcType=INTEGER},
+      #{departureCode,jdbcType=VARCHAR}, #{arrivalCode,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="createBatch" >
+    insert into pltm_order_flight (order_number, flight_id,
+      flight_number, flight_segment, departure_city,
+      arrival_city, interval_day, departure_date, 
+      departure_time, arrival_time, cabin, 
+      departure_terminal, arrival_terminal, create_user, 
+      create_time, last_modify_time, last_modify_person,
+      departure_code, arrival_code)
+    values 
+      <foreach collection="list" item="item" index="index" separator="," >  
+	        (#{item.orderNumber,jdbcType=CHAR}, #{item.flightId,jdbcType=INTEGER},
+	      #{item.flightNumber,jdbcType=VARCHAR}, #{item.flightSegment,jdbcType=TINYINT}, #{item.departureCity,jdbcType=VARCHAR}, 
+	      #{item.arrivalCity,jdbcType=VARCHAR}, #{item.intervalDay,jdbcType=TINYINT}, #{item.departureDate,jdbcType=DATE}, 
+	      #{item.departureTime,jdbcType=CHAR}, #{item.arrivalTime,jdbcType=CHAR}, #{item.cabin,jdbcType=VARCHAR}, 
+	      #{item.departureTerminal,jdbcType=VARCHAR}, #{item.arrivalTerminal,jdbcType=VARCHAR}, #{item.createUser,jdbcType=INTEGER}, 
+	      #{item.createTime,jdbcType=TIMESTAMP}, #{item.lastModifyTime,jdbcType=TIMESTAMP}, #{item.lastModifyPerson,jdbcType=INTEGER},
+	      #{item.departureCode,jdbcType=VARCHAR}, #{item.arrivalCode,jdbcType=VARCHAR})
+	    </foreach>  
+  </insert>
+  <delete id="deleteByOrderNumber" parameterType="java.lang.String" >
+    delete from pltm_order_flight
+    where order_number=#{orderNumber,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByContractNumber" parameterType="java.lang.String" >
+    delete from pltm_order_flight
+    where order_number in(select order_number from pltm_order_contract where contract_no=#{contractNo,jdbcType=VARCHAR} ) 
+  </delete>
+</mapper>

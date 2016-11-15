@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yixiang.np.dao.PltmTradeListDao">
+    <resultMap id="BaseResultMap" type="PltmTradeList">
+        <id column="pltmTradeList_id" property="id" jdbcType="BIGINT"/>
+        <result column="pltmTradeList_pay_order_number" property="payOrderNumber" jdbcType="VARCHAR"/>
+        <result column="pltmTradeList_trade_type" property="tradeType" jdbcType="TINYINT"/>
+        <result column="pltmTradeList_income" property="income" jdbcType="REAL"/>
+        <result column="pltmTradeList_cost" property="cost" jdbcType="REAL"/>
+        <result column="pltmTradeList_account_balance" property="accountBalance" jdbcType="REAL"/>
+        <result column="pltmTradeList_pay_type" property="payType" jdbcType="TINYINT"/>
+        <result column="pltmTradeList_create_user" property="createUser" jdbcType="INTEGER"/>
+        <result column="pltmTradeList_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="pltmTradeList_last_modify_time" property="lastModifyTime" jdbcType="TIMESTAMP"/>
+        <result column="pltmTradeList_last_modify_person" property="lastModifyPerson" jdbcType="INTEGER"/>
+        <result column="pltmTradeList_remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="pltmTradeList_account_number" property="accountNumber" jdbcType="VARCHAR"/>
+        <result column="pltmTradeList_account_name" property="accountName" jdbcType="VARCHAR"/>
+        <result column="pltmTradeList_organization_id" property="organizationId" jdbcType="BIGINT"/>
+        <result column="pltmTradeList_status" property="status" jdbcType="BIGINT"/>
+        <result column="pltmTradeList_organization_name" property="organizationName" jdbcType="BIGINT"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <trim prefix="where" prefixOverrides="and|or">
+            <if test="condition.payOrderNumber != null">
+                and pay_order_number like CONCAT('%','${condition.payOrderNumber}','%')
+            </if>
+            <if test="condition.tradeType != null">
+                and trade_type = #{condition.tradeType,jdbcType=TINYINT}
+            </if>
+            <if test="condition.income != null">
+                and income = #{condition.income,jdbcType=REAL}
+            </if>
+            <if test="condition.cost != null">
+                and cost = #{condition.cost,jdbcType=REAL}
+            </if>
+            <if test="condition.accountBalance != null">
+                and account_balance = #{condition.accountBalance,jdbcType=REAL}
+            </if>
+            <if test="condition.payType != null">
+                and pay_type = #{condition.payType,jdbcType=TINYINT}
+            </if>
+            <if test="condition.createUser != null">
+                and create_user = #{condition.createUser,jdbcType=INTEGER}
+            </if>
+            <if test="condition.startDate != null">
+                and create_time >= #{condition.startDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="condition.endDate != null">
+                and create_time <![CDATA[<]]>= #{condition.endDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="condition.lastModifyTime != null">
+                and last_modify_time = #{condition.lastModifyTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="condition.lastModifyPerson != null">
+                and last_modify_person = #{condition.lastModifyPerson,jdbcType=INTEGER}
+            </if>
+            <if test="condition.organizationId != null">
+                and organization_id = #{condition.organizationId,jdbcType=BIGINT}
+            </if>
+            <if test="condition.status != null">
+                and status = #{condition.status,jdbcType=TINYINT}
+            </if>
+            <if test="condition.organizationName != null and condition.organizationName != ''">
+                and organization_name like CONCAT('%','${condition.organizationName}','%')
+            </if>
+        </trim>
+    </sql>
+    <sql id="Base_Column_List">
+        pltmTradeList.id as pltmTradeList_id, pltmTradeList.pay_order_number as pltmTradeList_pay_order_number,
+        pltmTradeList.trade_type as pltmTradeList_trade_type, pltmTradeList.income as pltmTradeList_income,
+        pltmTradeList.cost as pltmTradeList_cost, pltmTradeList.account_balance as pltmTradeList_account_balance,
+        pltmTradeList.pay_type as pltmTradeList_pay_type, pltmTradeList.create_user as pltmTradeList_create_user,
+        pltmTradeList.create_time as pltmTradeList_create_time, pltmTradeList.last_modify_time as
+        pltmTradeList_last_modify_time,
+        pltmTradeList.last_modify_person as pltmTradeList_last_modify_person, pltmTradeList.remark as
+        pltmTradeList_remark, pltmTradeList.account_number as pltmTradeList_account_number, pltmTradeList.account_name
+        as
+        pltmTradeList_account_name, pltmTradeList.organization_id as pltmTradeList_organization_id,
+        pltmTradeList.status as pltmTradeList_status, pltmTradeList.organization_name as
+        pltmTradeList_organization_name,
+        pltmTradeList.money as pltmTradeList_money, pltmTradeList.freeze_amount as pltmTradeList_freeze_amount,
+        pltmTradeList.account_balance as pltmTradeList_account_balance
+
+    </sql>
+    <resultMap id="PltmTradeListVoResultMap" type="PltmTradeListVo">
+        <id column="pltmTradeList_id" property="id" jdbcType="BIGINT"/>
+        <result column="pltmTradeList_pay_order_number" property="payOrderNumber" jdbcType="VARCHAR"/>
+        <result column="pltmTradeList_trade_type" property="tradeType" jdbcType="TINYINT"/>
+        <result column="pltmTradeList_income" property="income" jdbcType="REAL"/>
+        <result column="pltmTradeList_cost" property="cost" jdbcType="REAL"/>
+        <result column="pltmTradeList_account_balance" property="accountBalance" jdbcType="REAL"/>
+        <result column="pltmTradeList_pay_type" property="payType" jdbcType="TINYINT"/>
+        <result column="pltmTradeList_create_user" property="createUser" jdbcType="INTEGER"/>
+        <result column="pltmTradeList_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="pltmTradeList_last_modify_time" property="lastModifyTime" jdbcType="TIMESTAMP"/>
+        <result column="pltmTradeList_last_modify_person" property="lastModifyPerson" jdbcType="INTEGER"/>
+        <result column="pltmTradeList_remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="pltmTradeList_account_number" property="accountNumber" jdbcType="VARCHAR"/>
+        <result column="pltmTradeList_account_name" property="accountName" jdbcType="VARCHAR"/>
+        <result column="pltmTradeList_organization_id" property="organizationId" jdbcType="BIGINT"/>
+        <result column="pltmTradeList_status" property="status" jdbcType="BIGINT"/>
+        <result column="pltmTradeList_organization_name" property="organizationName" jdbcType="BIGINT"/>
+        <result column="contractNo" property="contractNo" jdbcType="VARCHAR"/>
+        <result column="deptAirPort" property="deptAirPort" jdbcType="VARCHAR"/>
+        <result column="arrAirport" property="arrAirport" jdbcType="VARCHAR"/>
+        <result column="productList" property="productList" jdbcType="VARCHAR"/>
+        <result column="pltmTradeList_money" property="money" jdbcType="REAL"/>
+        <result column="pltmTradeList_freeze_amount" property="freezeAmount" jdbcType="REAL"/>
+        <result column="pltmTradeList_account_balance" property="availableBalance" jdbcType="REAL"/>
+    </resultMap>
+    <select id="listByCondition" resultMap="PltmTradeListVoResultMap" parameterType="java.util.Map">
+        select
+        <include refid="Base_Column_List"/>
+        from pltm_trade_list pltmTradeList
+        <if test="condition != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="condition.orderBy != null">
+            order by ${condition.orderBy}
+        </if>
+    </select>
+
+    <select id="selectByPtlId" resultMap="PltmTradeListVoResultMap" parameterType="java.lang.Long">
+        select
+
+        pltmTradeList.id as pltmTradeList_id, pltmTradeList.pay_order_number as pltmTradeList_pay_order_number,
+        pltmTradeList.trade_type as pltmTradeList_trade_type, pltmTradeList.income as pltmTradeList_income,
+        pltmTradeList.cost as pltmTradeList_cost, pltmTradeList.account_balance as pltmTradeList_account_balance,
+        pltmTradeList.pay_type as pltmTradeList_pay_type, pltmTradeList.create_user as pltmTradeList_create_user,
+        pltmTradeList.create_time as pltmTradeList_create_time, pltmTradeList.last_modify_time as
+        pltmTradeList_last_modify_time,
+        pltmTradeList.last_modify_person as pltmTradeList_last_modify_person, pltmTradeList.remark as
+        pltmTradeList_remark, so.bankCard as pltmTradeList_account_number, so.bankUser
+        as
+        pltmTradeList_account_name, pltmTradeList.organization_id as pltmTradeList_organization_id,
+        pltmTradeList.status as pltmTradeList_status, pltmTradeList.organization_name as
+        pltmTradeList_organization_name,
+        pltmTradeList.money as pltmTradeList_money, pltmTradeList.freeze_amount as pltmTradeList_freeze_amount,
+        pltmTradeList.account_balance as pltmTradeList_account_balance, bankName as bankName, bankCard as bankCard,
+        bankUser as bankUser
+        FROM
+        pltm_trade_list pltmTradeList
+        LEFT JOIN
+        sys_organization so ON pltmTradeList.organization_id = so.id
+        LEFT JOIN
+        pltm_account pa ON pltmTradeList.organization_id = pa.organization_id
+
+        <if test="id != null">
+            <where>
+                pltmTradeList.id = #{id}
+            </where>
+        </if>
+    </select>
+    
+    <select id="listDespositByCondition" resultMap="PltmTradeListVoResultMap" parameterType="java.util.Map">
+        SELECT
+        <include refid="Base_Column_List"/>, pltmOrderContract.contract_no as contractNo,pltmOrderContract.dept_airport
+        as deptAirPort,
+        pltmOrderContract.arr_airport as arrAirport, pltmOrderContract.product_list as productList
+        FROM
+        pltm_trade_list pltmTradeList
+        LEFT JOIN
+        pltm_order_contract pltmOrderContract ON pltmTradeList.contract_no = pltmOrderContract.contract_no
+        <where>
+            <if test="condition != null">
+                <if test="condition.startDate != null">
+                    and pltmTradeList.create_time >= #{condition.startDate,jdbcType=TIMESTAMP}
+                </if>
+                <if test="condition.endDate != null">
+                    and pltmTradeList.create_time <![CDATA[<]]>= #{condition.endDate,jdbcType=TIMESTAMP}
+                </if>
+                <if test="condition.contractNo != null and condition.contractNo != ''">
+                    and pltmOrderContract.contract_no like CONCAT('%','${condition.contractNo}','%')
+                </if>
+                <if test="condition.organizationName != null and condition.organizationName != ''">
+                    and organization_name like CONCAT('%','${condition.organizationName}','%')
+                </if>
+            </if>
+            and pltmTradeList.trade_type in (1, 4)
+        </where>
+        order by pltmTradeList.create_time desc
+
+    </select>
+    <insert id="create" useGeneratedKeys="true" keyProperty="id">
+        insert into pltm_trade_list (pay_order_number, trade_type,
+        income, cost, account_balance,
+        pay_type, create_user, create_time,
+        last_modify_time, last_modify_person, remark, account_number, account_name, organization_id, status,
+        organization_name,contract_no, money, freeze_amount
+        )
+        values (#{payOrderNumber,jdbcType=VARCHAR}, #{tradeType,jdbcType=TINYINT},
+        #{income,jdbcType=REAL}, #{cost,jdbcType=REAL}, #{accountBalance,jdbcType=REAL},
+        #{payType,jdbcType=TINYINT}, #{createUser,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+        #{lastModifyTime,jdbcType=TIMESTAMP}, #{lastModifyPerson,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR},
+        #{accountNumber,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR}, #{organizationId, jdbcType=BIGINT},
+        #{status, jdbcType=TINYINT}, #{organizationName, jdbcType=VARCHAR}, #{contractNo, jdbcType=VARCHAR},
+        #{money,jdbcType=REAL},#{freezeAmount,jdbcType=REAL}
+        )
+    </insert>
+</mapper>

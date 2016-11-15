@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yixiang.np.dao.PltmOrderPassengerDao">
+    <resultMap id="BaseResultMap" type="PltmOrderPassenger">
+        <id column="pltmOrderPassenger_id" property="id" jdbcType="BIGINT"/>
+        <result column="pltmOrderPassenger_order_number" property="orderNumber" jdbcType="CHAR"/>
+        <result column="pltmOrderPassenger_ticket_number" property="ticketNumber" jdbcType="VARCHAR"/>
+        <result column="pltmOrderPassenger_name" property="name" jdbcType="VARCHAR"/>
+        <result column="pltmOrderPassenger_name_cn" property="nameCn" jdbcType="VARCHAR"/>
+        <result column="pltmOrderPassenger_sex" property="sex" jdbcType="TINYINT"/>
+        <result column="pltmOrderPassenger_passage_type" property="passageType" jdbcType="TINYINT"/>
+        <result column="pltmOrderPassenger_doc_type" property="docType" jdbcType="TINYINT"/>
+        <result column="pltmOrderPassenger_doc_id" property="docId" jdbcType="VARCHAR"/>
+        <result column="pltmOrderPassenger_doc_expire_date" property="docExpireDate" jdbcType="TIMESTAMP"/>
+        <result column="pltmOrderPassenger_birth_date" property="birthDate" jdbcType="TIMESTAMP"/>
+        <result column="pltmOrderPassenger_mobile" property="mobile" jdbcType="CHAR"/>
+        <result column="pltmOrderPassenger_create_user" property="createUser" jdbcType="INTEGER"/>
+        <result column="pltmOrderPassenger_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="pltmOrderPassenger_last_modify_time" property="lastModifyTime" jdbcType="TIMESTAMP"/>
+        <result column="pltmOrderPassenger_last_modify_person" property="lastModifyPerson" jdbcType="INTEGER"/>
+        <result column="pltmOrderPassenger_last_name_en" property="lastName_en" jdbcType="VARCHAR"/>
+        <result column="pltmOrderPassenger_first_name_en" property="firstName_en" jdbcType="VARCHAR"/>
+        <result column="pltmOrderPassenger_last_name_cn" property="lastName_cn" jdbcType="VARCHAR"/>
+        <result column="pltmOrderPassenger_first_name_cn" property="firstName_cn" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        pltmOrderPassenger.id as pltmOrderPassenger_id, pltmOrderPassenger.order_number as
+        pltmOrderPassenger_order_number,
+        pltmOrderPassenger.ticket_number as pltmOrderPassenger_ticket_number, pltmOrderPassenger.name as
+        pltmOrderPassenger_name,
+        pltmOrderPassenger.name_cn as pltmOrderPassenger_name_cn, pltmOrderPassenger.sex as pltmOrderPassenger_sex,
+        pltmOrderPassenger.passage_type as pltmOrderPassenger_passage_type, pltmOrderPassenger.doc_type as
+        pltmOrderPassenger_doc_type,
+        pltmOrderPassenger.doc_id as pltmOrderPassenger_doc_id, pltmOrderPassenger.doc_expire_date as
+        pltmOrderPassenger_doc_expire_date,
+        pltmOrderPassenger.birth_date as pltmOrderPassenger_birth_date, pltmOrderPassenger.mobile as
+        pltmOrderPassenger_mobile,
+        pltmOrderPassenger.create_user as pltmOrderPassenger_create_user, pltmOrderPassenger.create_time as
+        pltmOrderPassenger_create_time,
+        pltmOrderPassenger.last_modify_time as pltmOrderPassenger_last_modify_time,
+        pltmOrderPassenger.last_modify_person as pltmOrderPassenger_last_modify_person,
+        pltmOrderPassenger.last_name_en as pltmOrderPassenger_last_name_en, pltmOrderPassenger.first_name_en as
+        pltmOrderPassenger_first_name_en,
+        pltmOrderPassenger.last_name_cn as pltmOrderPassenger_last_name_cn, pltmOrderPassenger.first_name_cn as
+        pltmOrderPassenger_first_name_cn
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into pltm_order_passenger (order_number, ticket_number,
+        name, name_cn, sex,
+        passage_type, doc_type, doc_id,
+        doc_expire_date, birth_date, mobile,
+        create_user, create_time, last_modify_time,
+        last_modify_person)
+        values (#{orderNumber,jdbcType=CHAR}, #{ticketNumber,jdbcType=VARCHAR},
+        #{name,jdbcType=VARCHAR}, #{nameCn,jdbcType=VARCHAR}, #{sex,jdbcType=TINYINT},
+        #{passageType,jdbcType=TINYINT}, #{docType,jdbcType=TINYINT}, #{docId,jdbcType=VARCHAR},
+        #{docExpireDate,jdbcType=TIMESTAMP}, #{birthDate,jdbcType=TIMESTAMP}, #{mobile,jdbcType=CHAR},
+        #{createUser,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{lastModifyTime,jdbcType=TIMESTAMP},
+        #{lastModifyPerson,jdbcType=INTEGER}, #{last_name_en,jdbcType=VARCHAR}, #{first_name_en,jdbcType=VARCHAR},
+        #{last_name_cn,jdbcType=VARCHAR}, #{first_name_cn,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updatePassengerTicketNum" parameterType="Map">
+        update pltm_order_passenger
+        <set>
+            <if test="ticketNumber != null and ticketNumber != ''">
+                ticket_number = #{ticketNumber,jdbcType=VARCHAR}
+            </if>
+        </set>
+        <trim prefix="where" prefixOverrides="and|or">
+            <if test="orderNumber != null and orderNumber != ''">
+                and order_number = #{orderNumber, jdbcType=VARCHAR}
+            </if>
+            <if test="docType != null">
+                and doc_type = #{docType, jdbcType=TINYINT}
+            </if>
+            <if test="docId != null and docId != ''">
+                and doc_id = #{docId, jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </update>
+</mapper>

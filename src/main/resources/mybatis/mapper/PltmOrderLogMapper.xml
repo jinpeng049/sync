@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yixiang.np.dao.PltmOrderLogDao">
+    
+    <insert id="saveOrderLog" parameterType="com.yixiang.np.model.vo.PltmOrderLogVo">
+		insert into pltm_order_log(order_no,operate_userid,operate_role,operate_time,operate_state,remarks)
+		values(#{orderNo},#{operateUserid},#{operateRole},now(),#{operateState},#{remarks})
+	</insert>
+</mapper>

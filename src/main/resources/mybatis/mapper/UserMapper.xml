@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yixiang.np.dao.UserDao">
+
+    <resultMap id="UserResult" type="User">
+        <id property="id" column="id"/>
+        <result property="loginname" column="loginname"/>
+        <result property="password" column="password"/>
+        <result property="name" column="name"/>
+        <result property="sex" column="sex"/>
+        <result property="age" column="age"/>
+        <result property="createdatetime" column="createdatetime"/>
+        <result property="usertype" column="usertype"/>
+        <result property="isdefault" column="isdefault"/>
+        <result property="state" column="state"/>
+        <result property="organizationId" column="organizationId"/>
+        <result property="organizationName" column="organizationName"/>
+    </resultMap> 
+    <select id="findAll" parameterType="java.util.Map"  resultType="User">
+		select t.id,t.loginname,t.password,t.name,t.sex,t.age,t.createdatetime,t.usertype,t.isdefault,t.state,t.mobile,t.email,t1.id organizationId,t1.name organizationName
+		from sys_user t left join sys_organization t1 on t1.id=t.organization_id
+		where 1=1 
+		<if test="organization_id!=null">
+			and t.organization_id=#{organization_id}
+		</if>
+		<if test="usertype!=null">
+			and t.usertype=#{usertype}
+		</if>
+	</select>
+    <select id="findByRole" parameterType="java.util.Map" resultType="User">
+		select t.id,t.loginname,t.password,t.name,t.sex,t.age,t.createdatetime,t.usertype,t.isdefault,t.state,t.mobile,t.email
+		from sys_user t left join sys_user_role t1 on t1.user_id=t.id
+		where 1=1 
+		<if test="role_id!=null">
+			and t1.role_id=#{role_id}
+		</if>
+	</select>
+	<select id="count" parameterType="java.util.Map"  resultType="java.lang.Long">
+		select count(1) from sys_user
+		where 1=1 
+		<if test="organization_id!=null">
+			and organization_id=#{organization_id}
+		</if>
+		<if test="usertype!=null">
+			and usertype=#{usertype}
+		</if>
+	</select>
+    <select id="login" resultType="User" parameterType="user" >
+		select 
+		u.id,
+		u.loginname,
+		u.password,
+		u.name,
+		u.sex,
+		u.age,
+		u.mobile,
+		u.email,
+		u.createdatetime,
+		u.usertype,
+		u.isdefault,
+		u.state ,
+		u.remark,
+		o.id organizationId,
+		o.name organizationName,
+		o.orgType
+		from sys_user u
+		left join sys_organization o on o.id=u.organization_id
+		where loginname=#{loginname} and password=#{password}
+	</select>
+	<select id="resourceList"  parameterType="java.util.Map" resultType="java.lang.String">
+		SELECT DISTINCT t.url FROM sys_resource t LEFT JOIN sys_role_resource t1 ON t1.resource_id=t.id 
+		LEFT JOIN sys_user_role t2 ON t2.role_id=t1.role_id where t2.user_id=#{id}
+	</select>
+	<insert id="add" parameterType="user"  useGeneratedKeys="true"  keyProperty="id">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into sys_user(loginname,password,name,sex,age,mobile,email,usertype,isdefault,state,organization_id,createdatetime)
+		values
+		(#{loginname},#{password},#{name},#{sex},#{age},#{mobile},#{email},#{usertype},#{isdefault},#{state},#{organizationId},#{createdatetime}) 
+	</insert>
+	
+	<insert id="addUserRole" parameterType="java.util.Map" >
+		insert into sys_user_role(user_id,role_id)values(#{user_id},#{role_id})
+	</insert>
+	<select id="get"  parameterType="java.lang.Long" resultMap="UserResult">
+		select t.id,t.loginname,t.password,t.name,t.sex,t.age,t.mobile,email,t.createdatetime,t.usertype,t.isdefault,t.state,t.remark,t1.id organizationId,t1.name organizationName  from sys_user t left join  sys_organization t1 on t1.id=t.organization_id where t.id=#{id}
+	</select>
+	<select id="getRoles"  parameterType="java.lang.Long"  resultType="java.lang.String">
+		select t.role_id from sys_user_role t  where t.user_id=#{id}
+	</select>
+	<select id="getByLoginName"  parameterType="java.lang.String" resultMap="UserResult">
+		select * from sys_user  where loginname=#{loginname}
+	</select>
+	<select id="getOperatorCountByOrg"  parameterType="java.lang.Long"  resultType="java.lang.Integer">
+		select count(1) from sys_user where organization_id=#{orgId} and state=0 and usertype=2
+	</select>
+	<select id="getUserByOrgid"  parameterType="java.lang.Long"  resultMap="UserResult">
+		select t.id,t.loginname,t.password,t.name,t.sex,t.age,t.mobile,email,t.createdatetime,t.usertype,t.isdefault,t.state,t.remark,t1.id organizationId,t1.name organizationName
+		from sys_user t left join  sys_organization t1 on t1.id=t.organization_id where t1.id=#{orgId}
+	</select>
+	<delete id="delete" parameterType="java.lang.Long">
+		delete from sys_user where id=#{id}
+	</delete>
+	<delete id="deleteUserRole" parameterType="java.lang.Long">
+		delete from sys_user_role where user_id=#{id}
+	</delete>
+	<update id="edit" parameterType="User"> 
+		update sys_user set loginname=#{loginname},password=#{password},
+		 name=#{name},sex=#{sex},age=#{age},usertype=#{usertype},isdefault=#{isdefault},mobile=#{mobile},email=#{email},
+		 state=#{state},organization_id=#{organizationId},createdatetime=#{createdatetime}
+		where id=#{id}
+	</update>
+	<update id="editUserPwd" parameterType="java.util.Map"> 
+		update sys_user set password=#{password} where id=#{id}
+	</update>
+	<update id="resetPwd"> 
+		update sys_user set password=#{password} where id=#{id}
+	</update>
+
+	<select id="selectNoAudit" resultType="com.yixiang.np.model.vo.RegVo">
+		SELECT su.id,su.`loginname` AS username,su.`name` AS nickname,su.`email` AS mail,su.`state`,su.`organization_id` as orgId,
+			so.`name` AS company,so.`address` AS location,so.`prov`,so.`city`,so.`contact` AS contacts,so.mobile,so.`telphone`,
+			so.`bankName`,so.`bankCard`,so.`bankUser`,su.createdatetime as createTime
+			FROM sys_user su INNER JOIN sys_organization so
+			ON su.`organization_id` = so.`id`
+			where so.orgType = 2 and su.state != 0
+				<if test="username !=null and username != ''">
+					and su.`loginname` like CONCAT('%','${username}','%')
+				</if>
+				<if test="nickname !=null and nickname != ''">
+					and su.`name` like CONCAT('%','${nickname}','%')
+				</if>
+				<if test="company !=null and company != ''">
+					and so.`name` like CONCAT('%','${company}','%')
+				</if>
+				<if test="contact !=null and contact != ''">
+					and so.`contact` like CONCAT('%','${contact}','%')
+				</if>
+				<if test="state !=null and state!= '-1'.toString()">
+					and su.`state` = #{state}
+				</if>
+	</select>
+
+	<update id="auditSucess">
+		update sys_user set state =#{state},remark = #{remark}
+			where id = #{id}
+	</update>
+
+	<select id="selectInfoById" resultType="com.yixiang.np.model.vo.RegVo">
+		SELECT su.id,su.`loginname` AS username,su.`name` AS nickname,su.`email` AS mail,su.`state`,su.`organization_id` as orgId,
+			so.`name` AS company,so.`address` AS location,so.`prov`,so.`city`,so.`contact` AS contacts,so.mobile,so.`telphone`,
+			so.`bankName`,so.`bankCard`,so.`bankUser`,so.`zz_path` zzPath
+			FROM sys_user su INNER JOIN sys_organization so
+			ON su.`organization_id` = so.`id`
+			where su.id = #{id}
+	</select>
+</mapper>

@@ -16,6 +16,7 @@ import com.yixiang.np.service.EmailService;
 import com.yixiang.np.service.OrderServiceI;
 import com.yixiang.np.utils.OrderUtil;
 import org.apache.commons.lang.StringUtils;
+import org.quartz.DisallowConcurrentExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import java.util.*;
  * Created by pengpeng on 16-9-12.
  */
 @Component("syncOrderTicket")
+@DisallowConcurrentExecution
 public class SyncOrderTicketTask {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncOrderTicketTask.class);

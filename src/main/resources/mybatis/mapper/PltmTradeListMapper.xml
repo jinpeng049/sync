@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yixiang.np.dao.PltmTradeListDao">
-    <resultMap id="BaseResultMap" type="PltmTradeList">
+    <resultMap id="BaseResultMap" type="com.yixiang.np.model.po.PltmTradeList">
         <id column="pltmTradeList_id" property="id" jdbcType="BIGINT"/>
         <result column="pltmTradeList_pay_order_number" property="payOrderNumber" jdbcType="VARCHAR"/>
         <result column="pltmTradeList_trade_type" property="tradeType" jdbcType="TINYINT"/>
@@ -83,7 +83,7 @@
         pltmTradeList.account_balance as pltmTradeList_account_balance
 
     </sql>
-    <resultMap id="PltmTradeListVoResultMap" type="PltmTradeListVo">
+    <resultMap id="PltmTradeListVoResultMap" type="com.yixiang.np.model.vo.PltmTradeListVo">
         <id column="pltmTradeList_id" property="id" jdbcType="BIGINT"/>
         <result column="pltmTradeList_pay_order_number" property="payOrderNumber" jdbcType="VARCHAR"/>
         <result column="pltmTradeList_trade_type" property="tradeType" jdbcType="TINYINT"/>

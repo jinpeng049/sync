@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yixiang.np.dao.PltmOrderPassengerDao">
-    <resultMap id="BaseResultMap" type="PltmOrderPassenger">
+    <resultMap id="BaseResultMap" type="com.yixiang.np.model.po.PltmOrderPassenger">
         <id column="pltmOrderPassenger_id" property="id" jdbcType="BIGINT"/>
         <result column="pltmOrderPassenger_order_number" property="orderNumber" jdbcType="CHAR"/>
         <result column="pltmOrderPassenger_ticket_number" property="ticketNumber" jdbcType="VARCHAR"/>

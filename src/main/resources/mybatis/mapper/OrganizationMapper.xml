@@ -4,13 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yixiang.np.dao.OrganizationDao">
 
-    <select id="findAll" resultType="Organization">
+    <select id="findAll" resultType="com.yixiang.np.model.po.Organization">
         select id,name,address,code,icon,pid,seq,createdatetime,bankName,bankCard,bankUser,
         prov,city,contact,mobile,telphone,domain,orgType from sys_organization
         order by seq
     </select>
 
-    <select id="findAllVo" resultType="OrganizationVo">
+    <select id="findAllVo" resultType="com.yixiang.np.model.vo.OrganizationVo">
         select t.id as id, t.name as name,t.address as address,t.code as code,t.icon as icon,t.pid as pid,t.seq as seq,t.createdatetime as createdatetime, t.bankName as bankName,t.bankCard as bankCard,t.bankUser as bankUser,
         t.prov as prov,t.city as city,t.contact as contact,t.mobile as mobile,t.telphone as telphone,t.domain as domain,t.orgType as orgType, plt.money as money, plt.available_balance as availableBalance from sys_organization t left join pltm_account plt on
         t.id = plt.organization_id
@@ -18,7 +18,7 @@
     </select>
 
 
-    <select id="findByOrgid" resultType="Organization">
+    <select id="findByOrgid" resultType="com.yixiang.np.model.po.Organization">
         select id,name,address,code,icon,pid,seq,createdatetime,bankName,bankCard,bankUser,
         prov,city,contact,mobile,telphone,domain,orgType from sys_organization
         <if test="pid!=null">
@@ -29,7 +29,7 @@
         </if>
         order by seq
     </select>
-    <select id="findByOrgType" resultType="Organization">
+    <select id="findByOrgType" resultType="com.yixiang.np.model.po.Organization">
         select id,name,address,code,icon,pid,seq,createdatetime,bankName,bankCard,bankUser,
         prov,city,contact,mobile,telphone,domain,orgType from sys_organization
         <if test="orgType != null">
@@ -37,7 +37,7 @@
         </if>
         order by seq
     </select>
-    <insert id="add" parameterType="Organization" useGeneratedKeys="true" keyProperty="id">
+    <insert id="add" parameterType="com.yixiang.np.model.po.Organization" useGeneratedKeys="true" keyProperty="id">
         <!-- <selectKey keyProperty="id" order="AFTER" resultType="long">
             select LAST_INSERT_ID()
         </selectKey> -->
@@ -53,7 +53,7 @@
         delete from sys_organization where id =#{id}
     </delete>
 
-    <update id="update" parameterType="Organization">
+    <update id="update" parameterType="com.yixiang.np.model.po.Organization">
         update sys_organization set name=#{name},address=#{address},code=#{code},icon=#{icon},
         pid=#{pid},seq=#{seq},createdatetime=#{createdatetime},
         bankName=#{bankName},bankCard=#{bankCard},bankUser=#{bankUser},
@@ -62,7 +62,7 @@
         where id=#{id}
     </update>
 
-    <select id="get" parameterType="long" resultType="Organization">
+    <select id="get" parameterType="long" resultType="com.yixiang.np.model.po.Organization">
         select id,name,address,code,icon,pid,seq,createdatetime,bankName,bankCard,bankUser,
         prov,city,contact,mobile,telphone,domain,orgType,
         keep_time_single keepTimeSingle,keep_time_charter keepTimeCharter,

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yixiang.np.dao.PltmAccountDao">
-    <resultMap id="BaseResultMap" type="PltmAccount">
+    <resultMap id="BaseResultMap" type="com.yixiang.np.model.po.PltmAccount">
         <id column="pltmAccount_id" property="id" jdbcType="BIGINT"/>
         <result column="pltmAccount_type" property="type" jdbcType="TINYINT"/>
         <result column="pltmAccount_account_number" property="accountNumber" jdbcType="VARCHAR"/>
@@ -34,7 +34,7 @@
         pltmAccount.freeze_amount as pltmAccount_freeze_amount,
         pltmAccount.available_balance as pltmAccount_available_balance
     </sql>
-    <insert id="create" parameterType="PltmAccount" useGeneratedKeys="true" keyProperty="id">
+    <insert id="create" parameterType="com.yixiang.np.model.po.PltmAccount" useGeneratedKeys="true" keyProperty="id">
         insert into pltm_account (type, account_number,
         account_name, money, receivable,
         stay_present, already_mentioned, organization_id,
@@ -47,14 +47,14 @@
         #{lastModifyTime,jdbcType=TIMESTAMP}, #{lastModifyPerson,jdbcType=INTEGER})
     </insert>
 
-    <select id="selectBySupplierId" resultType="PltmAccount" parameterType="java.lang.Integer">
+    <select id="selectBySupplierId" resultType="com.yixiang.np.model.po.PltmAccount" parameterType="java.lang.Integer">
         select
         <include refid="Base_Column_List"/>
         from pltm_account pltmAccount
         where pltmAccount.organization_id = #{organizationId,jdbcType=INTEGER}
     </select>
 
-    <update id="updateByPrimaryKeySelective" parameterType="PltmAccount">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yixiang.np.model.po.PltmAccount">
         update pltm_account
         <set>
             <if test="type != null">

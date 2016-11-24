@@ -12,7 +12,7 @@ public class PltmOrder implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final Integer COLUMN_ORDERSTATUS_TOBE_PAY = -1;//无状态  合同未支付
-    
+
     public static final Integer COLUMN_ORDERSTATUS_TOBE_PAID = 0;//待支付
 
     //public static final Integer COLUMN_ORDERSTATUS_TOBE_CHECK = 1;//待审核
@@ -32,7 +32,7 @@ public class PltmOrder implements Serializable {
 
     public static final Integer ORDER_TYPE_FIT = 0;//0：散客
     public static final Integer ORDER_TYPE_CUT = 1;//:1：切位
-    
+
     /**
      * pk
      */
@@ -284,7 +284,15 @@ public class PltmOrder implements Serializable {
      */
     @Column(name = "routing_type")
     private String routingType;
-    
+
+    /**
+     * 支付超时时间
+     *
+     * @return
+     */
+    @Column(name = "pay_over_time")
+    private Date payOverTime;
+
     public Long getId() {
         return id;
     }
@@ -584,14 +592,14 @@ public class PltmOrder implements Serializable {
     }
 
     public Integer getProductId() {
-		return productId;
-	}
+        return productId;
+    }
 
-	public void setProductId(Integer productId) {
-		this.productId = productId;
-	}
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
 
-	public PltmOrder() {
+    public PltmOrder() {
     }
 
     public PltmOrder(String orderNumber) {
@@ -599,47 +607,55 @@ public class PltmOrder implements Serializable {
     }
 
     public Integer getOldPurchQuantity() {
-		return oldPurchQuantity;
-	}
+        return oldPurchQuantity;
+    }
 
-	public void setOldPurchQuantity(Integer oldPurchQuantity) {
-		this.oldPurchQuantity = oldPurchQuantity;
-	}
+    public void setOldPurchQuantity(Integer oldPurchQuantity) {
+        this.oldPurchQuantity = oldPurchQuantity;
+    }
 
-	public Double getOldUnitPrice() {
-		return oldUnitPrice;
-	}
+    public Double getOldUnitPrice() {
+        return oldUnitPrice;
+    }
 
-	public void setOldUnitPrice(Double oldUnitPrice) {
-		this.oldUnitPrice = oldUnitPrice;
-	}
+    public void setOldUnitPrice(Double oldUnitPrice) {
+        this.oldUnitPrice = oldUnitPrice;
+    }
 
-	public Double getOldTicketLoss() {
-		return oldTicketLoss;
-	}
+    public Double getOldTicketLoss() {
+        return oldTicketLoss;
+    }
 
-	public void setOldTicketLoss(Double oldTicketLoss) {
-		this.oldTicketLoss = oldTicketLoss;
-	}
+    public void setOldTicketLoss(Double oldTicketLoss) {
+        this.oldTicketLoss = oldTicketLoss;
+    }
 
-	public Double getOldTicketRate() {
-		return oldTicketRate;
-	}
+    public Double getOldTicketRate() {
+        return oldTicketRate;
+    }
 
-	public void setOldTicketRate(Double oldTicketRate) {
-		this.oldTicketRate = oldTicketRate;
-	}
-	
+    public void setOldTicketRate(Double oldTicketRate) {
+        this.oldTicketRate = oldTicketRate;
+    }
 
-	public String getRoutingType() {
-		return routingType;
-	}
 
-	public void setRoutingType(String routingType) {
-		this.routingType = routingType;
-	}
+    public String getRoutingType() {
+        return routingType;
+    }
 
-	@Override
+    public void setRoutingType(String routingType) {
+        this.routingType = routingType;
+    }
+
+    public Date getPayOverTime() {
+        return payOverTime;
+    }
+
+    public void setPayOverTime(Date payOverTime) {
+        this.payOverTime = payOverTime;
+    }
+
+    @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("PltmOrder{");
         sb.append("id=").append(id);
@@ -680,6 +696,12 @@ public class PltmOrder implements Serializable {
         sb.append(", ticketRate=").append(ticketRate);
         sb.append(", orderType=").append(orderType);
         sb.append(", productId=").append(productId);
+        sb.append(", oldPurchQuantity=").append(oldPurchQuantity);
+        sb.append(", oldUnitPrice=").append(oldUnitPrice);
+        sb.append(", oldTicketLoss=").append(oldTicketLoss);
+        sb.append(", oldTicketRate=").append(oldTicketRate);
+        sb.append(", routingType='").append(routingType).append('\'');
+        sb.append(", payOverTime=").append(payOverTime);
         sb.append('}');
         return sb.toString();
     }

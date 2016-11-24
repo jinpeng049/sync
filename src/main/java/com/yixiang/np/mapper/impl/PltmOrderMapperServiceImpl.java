@@ -80,4 +80,26 @@ public class PltmOrderMapperServiceImpl implements PltmOrderMapperService {
         }
         return mapper.selectCountByExample(example);
     }
+
+    @Override
+    public List<PltmOrder> queryPayOverTimeOrder() {
+        Example example = new Example(PltmOrder.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andLessThan("payOverTime", new Date());
+        criteria.andEqualTo("orderStatus", PltmOrder.COLUMN_ORDERSTATUS_TOBE_PAID);
+        criteria.andEqualTo("orderType", PltmOrder.ORDER_TYPE_FIT);
+        return mapper.selectByExample(example);
+    }
+
+    @Override
+    public Integer updateOrderStatus(PltmOrder pltmOrder) {
+        if (pltmOrder != null && StringUtils.isNotEmpty(pltmOrder.getOrderNumber())) {
+            Example example = new Example(PltmOrder.class);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("orderNumber", pltmOrder.getOrderNumber());
+            pltmOrder.setOrderNumber(null);
+            return mapper.updateByExampleSelective(pltmOrder, example);
+        }
+        return null;
+    }
 }

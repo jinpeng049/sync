@@ -52,7 +52,7 @@ public interface OrderServiceI {
 //    Integer queryIsCanceled(String orderNumber);
 //
 //    //订单联合取消
-//    Response orderCancelAll(String orderNumber, String remarks);
+    void orderCancelAll(String orderNumber, String remarks);
 //
 //    //根据pss订单编号 查询  订单订单编号
 //    String queryPltmOrderNum(String orderNumber);

@@ -16,4 +16,8 @@ public interface PltmOrderMapperService {
 
     Integer selectCountByExample(MessageRecord messageRecord);
 
+    List<PltmOrder> queryPayOverTimeOrder();
+
+    Integer updateOrderStatus(PltmOrder pltmOrder);
+
 }

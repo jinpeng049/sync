@@ -1,17 +1,24 @@
 package com.yixiang.np.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.yixiang.np.constant.Constant;
+import com.yixiang.np.constant.GlobalConstant;
 import com.yixiang.np.dao.PltmOrderDao;
 import com.yixiang.np.model.vo.EmailVo;
 import com.yixiang.np.model.vo.OrderFlightVo;
 import com.yixiang.np.model.vo.PltmOrderVo;
 import com.yixiang.np.service.OrderServiceI;
 import com.yixiang.np.utils.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -24,12 +31,17 @@ import static com.yixiang.np.constant.Constant.SeatClass;
 @Service("orderService")
 public class OrderServiceImpl implements OrderServiceI {
 
-    //    private org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(OrderServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OrderServiceImpl.class);
+
+
 //    @Autowired
 //    PltmOrderContractDao contractDao;
 
     @Autowired
     PltmOrderDao pltmOrderDao;
+    //请求PSS路径
+    @Value("${order.cancel.pss.url}")
+    private String orderCancelPssUrl;
 
 //    @Autowired
 //    PltmPaymentDao pltmPaymentDao;
@@ -76,7 +88,7 @@ public class OrderServiceImpl implements OrderServiceI {
 //    public Json createOrderQw(OrderCreateQwPo orderCreateQwPo, SessionInfo sessionInfo) {
 //        Json json = new Json();
 //        OrderCreateQwPo newOrderCreateQwPo = new OrderCreateQwPo();
-//        logger.debug("orderCreatePo:" + orderCreateQwPo + "; sessionInfo:" + sessionInfo);
+//        LOG.debug("orderCreatePo:" + orderCreateQwPo + "; sessionInfo:" + sessionInfo);
 //        String contractNo = getContractNo();//合同编号
 //        PltmContractVo contract = orderCreateQwPo.getContract();
 //        contract.setCreateTime(new Date());
@@ -159,15 +171,15 @@ public class OrderServiceImpl implements OrderServiceI {
 //        headers.setContentType(type);
 //        HttpEntity<String> formEntity = new HttpEntity<String>(pssReqJson, headers);
 //        //发送请求
-//        logger.debug("请求pss order url:" + pssCreateQwOrderUrl + "; HttpEntity:" + formEntity);
+//        LOG.debug("请求pss order url:" + pssCreateQwOrderUrl + "; HttpEntity:" + formEntity);
 //        ResponseEntity<String> pssResp = null;
 //        try {
 //            pssResp = restTemplate.postForEntity(pssCreateQwOrderUrl, formEntity, String.class);
 //        } catch (Exception e) {
-//            logger.error("提交pss 订单异常", e);
+//            LOG.error("提交pss 订单异常", e);
 //        }
 //
-//        logger.debug("响应pss order respString:" + pssResp == null ? null : JSON.toJSONString(pssResp));
+//        LOG.debug("响应pss order respString:" + pssResp == null ? null : JSON.toJSONString(pssResp));
 //        if (pssResp != null && pssResp.getStatusCode() != null) {//判断http响应
 //            HttpStatus httpStatus = pssResp.getStatusCode();
 //            if (httpStatus != null && httpStatus.equals(HttpStatus.OK)) {
@@ -191,7 +203,7 @@ public class OrderServiceImpl implements OrderServiceI {
 //                        try {
 //                            // payTimeOutScheduleJob(pltmOrder.getOrderNumber());
 //                        } catch (Exception e) {
-//                            logger.error("创建支付超时job exception", e);
+//                            LOG.error("创建支付超时job exception", e);
 //                        }
 //                        //添加订单日志
 //                        //saveLog(sessionInfo.getId().intValue(), pltmOrder.getOrderNumber());
@@ -451,11 +463,11 @@ public class OrderServiceImpl implements OrderServiceI {
 //
 //    @Override
 //    public PltmOrderVo queryOrderDetail(String orderNumber) {
-//        logger.debug("orderNumber:" + orderNumber);
+//        LOG.debug("orderNumber:" + orderNumber);
 //        PltmOrderVo order = pltmOrderDao.queryOrderDetail(orderNumber);
 //        List<OrderFlightVo> flight = pltmOrderDao.queryFlightByOrderid(orderNumber);
 //        order.setFlights(flight);
-//        logger.debug("PltmOrderVo:" + order);
+//        LOG.debug("PltmOrderVo:" + order);
 //        return order;
 //    }
 //
@@ -534,7 +546,7 @@ public class OrderServiceImpl implements OrderServiceI {
 //        String pss_orderNum = queryPssOrderNum(orderNumber);
 //        System.out.println(pss_orderNum);
 //        if (pss_orderNum == null || "".equals(pss_orderNum)) {
-//            logger.debug("PSS订单取消失败！订单编号 --->" + pss_orderNum + "该订单编号非法，没有相关数据！");
+//            LOG.debug("PSS订单取消失败！订单编号 --->" + pss_orderNum + "该订单编号非法，没有相关数据！");
 //            return 0;
 //        }
 //        //给pss 发送请求
@@ -543,21 +555,21 @@ public class OrderServiceImpl implements OrderServiceI {
 //        MediaType mType = MediaType.parseMediaType("application/json; charset=UTF-8");
 //        headers.setContentType(mType);
 //        HttpEntity<String> entity = new HttpEntity<>(headers);
-//        logger.debug("开始发送http请求：地址--->" + orderCancelPssUrl + pss_orderNum);
+//        LOG.debug("开始发送http请求：地址--->" + orderCancelPssUrl + pss_orderNum);
 //        ResponseEntity<String> response = rt.exchange(orderCancelPssUrl + pss_orderNum, HttpMethod.PUT, entity, String.class);
-//        logger.debug("http请求响应结果：结果--->" + response.toString());
+//        LOG.debug("http请求响应结果：结果--->" + response.toString());
 //
 //        if (response != null && response.getStatusCode() == HttpStatus.OK) {
 //            JSONObject json = JSONObject.parseObject(response.getBody());
 //            String status = json.get("status").toString();
 //            System.out.println("李正勇返回result:" + status);
 //            if (status != null && status.equals(GlobalConstant.PSS_ORDER_CREATE_OK)) {
-//                logger.debug("PSS订单取消成功！订单编号 --->" + pss_orderNum);
+//                LOG.debug("PSS订单取消成功！订单编号 --->" + pss_orderNum);
 //                return 1;
 //            }
 //        }
 //
-//        logger.debug("PSS订单取消失败！订单编号 --->" + pss_orderNum);
+//        LOG.debug("PSS订单取消失败！订单编号 --->" + pss_orderNum);
 //        return 0;
 //
 //    }
@@ -619,7 +631,8 @@ public class OrderServiceImpl implements OrderServiceI {
         }
         return email;
     }
-//
+
+    //
 //    @Override
 //    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
 //    public void passengerAdd(OrderPassenger passenger) {
@@ -686,9 +699,9 @@ public class OrderServiceImpl implements OrderServiceI {
 //        //发送请求
 //        String pssengerUrl = orderPssengerUrl;
 //        pssengerUrl = pssengerUrl.replaceAll("orderId", orderVo.getPssOrderNumber());
-//        logger.debug("请求pss order url:" + pssengerUrl + "; HttpEntity:" + formEntity);
+//        LOG.debug("请求pss order url:" + pssengerUrl + "; HttpEntity:" + formEntity);
 //        ResponseEntity<String> pssResp = restTemplate.postForEntity(pssengerUrl, formEntity, String.class);
-//        logger.debug("响应pss order respString:" + pssResp == null ? null : JSON.toJSONString(pssResp));
+//        LOG.debug("响应pss order respString:" + pssResp == null ? null : JSON.toJSONString(pssResp));
 //        if (pssResp != null && pssResp.getStatusCode() != null) {//判断http响应
 //            HttpStatus httpStatus = pssResp.getStatusCode();
 //            if (httpStatus != null && httpStatus.equals(HttpStatus.OK)) {
@@ -726,15 +739,15 @@ public class OrderServiceImpl implements OrderServiceI {
 //        String orderNumber = saveDeskOrder(pltmOrder, pltmOrderFlights, sessionInfo);//保存本地订单
 //        map.setNeedKey(orderNumber); //重要一步
 //        String pssReqJson = contactPssJson(orderCreatePo, sessionInfo);//向pss 发送请求 封装数据
-//        logger.debug("请求pss order url:" + pssCreateOrderUrl + "; OrderJson:" + pssReqJson);
+//        LOG.debug("请求pss order url:" + pssCreateOrderUrl + "; OrderJson:" + pssReqJson);
 //        ResponseEntity<String> pssOrderResp = this.postResp(pssReqJson, pssCreateOrderUrl);//发送post请求
-//        logger.debug("响应pss order respString:" + pssOrderResp == null ? null : JSON.toJSONString(pssOrderResp));
+//        LOG.debug("响应pss order respString:" + pssOrderResp == null ? null : JSON.toJSONString(pssOrderResp));
 //
 //        boolean checkRespResult = CheckResp.checkPssPostResp(pssOrderResp);//检验pss 响应
 //        if (!checkRespResult) { //同步pss 订单失败
 //            map.setNeedValue(2);
 //            postPssFailed(orderNumber, null);
-//            logger.info("同步pss order 订单失败");
+//            LOG.info("同步pss order 订单失败");
 //            return map;
 //        } else {
 //            String pssOrderNumber = JSONObject.parseObject(pssOrderResp.getBody()).get("data").toString();
@@ -798,57 +811,85 @@ public class OrderServiceImpl implements OrderServiceI {
 //        return pltmOrderDao.queryIsCanceled(orderNumber);
 //    }
 //
-//    //订单取消
-//    @Override
-//    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
-//    public Response orderCancelAll(String orderNumber, String remarks) {
-//        Response res = new Response();
-//        Integer pl_status = 0;
-//        Integer pss_status = 0;
-//        Integer order_status = null;
-//        try {
-//            order_status = queryIsCanceled(orderNumber);
-//            if (order_status == null) {
-//                res.setMessage("订单取消失败！此订单号不存在！");
-//                res.setStatus((short) 0);
-//
-//            } else if (order_status == 5) {
-//                res.setMessage("订单取消成功!");
-//                res.setStatus((short) 1);
-//            } else {
-//                //PSS订单取消
-//                pss_status = pssOrderCancel(orderNumber);
-//                if (pss_status == 1) {
-//                    pl_status = orderCancel(orderNumber);
-//                    if (pl_status == 1) {
-//                        logger.debug("平台订单取消成功！--->订单编号：" + orderNumber);
-//                        res.setMessage("订单取消成功！");
-//                        res.setStatus((short) 1);
-//                        //插入订单取消备注
-//                        if (remarks != null && !(remarks.equals(""))) {
-//                            pltmOrderDao.setRemark(remarks, orderNumber);
-//                        }
-//
-//                    } else {
-//                        logger.debug("平台订单取消失败！--->订单编号：" + orderNumber);
-//                        res.setMessage("订单取消失败！");
-//                        res.setStatus((short) 0);
-//                    }
-//                } else {
-//                    logger.debug("PSS订单取消失败!");
-//                    res.setMessage("订单取消失败！");
-//                    res.setStatus((short) 0);
-//                }
-//            }
-//        } catch (Exception e) {
-//            logger.error(e);
-//            res.setMessage("订单取消失败!");
-//            res.setStatus((short) 0);
-//            e.printStackTrace();
-//            e.printStackTrace();
-//        }
-//        return res;
-//    }
+    //订单取消
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
+    public void orderCancelAll(String orderNumber, String remarks) {
+        Integer pl_status = 0;
+        Integer pss_status = 0;
+        Integer order_status = null;
+        order_status = queryIsCanceled(orderNumber);
+        if (order_status == null) {
+            LOG.error("订单取消失败！此订单号不存在！");
+        } else if (order_status == 5) {
+            LOG.debug("订单取消成功!");
+        } else {
+            //PSS订单取消
+            pss_status = pssOrderCancel(orderNumber);
+            if (pss_status == 1) {
+                pl_status = orderCancel(orderNumber);
+                if (pl_status == 1) {
+                    LOG.debug("平台订单取消成功！--->订单编号：" + orderNumber);
+                    //插入订单取消备注
+                    if (remarks != null && !(remarks.equals(""))) {
+                        pltmOrderDao.setRemark(remarks, orderNumber);
+                    }
+
+                } else {
+                    LOG.debug("平台订单取消失败！--->订单编号：" + orderNumber);
+                }
+            } else {
+                LOG.debug("PSS订单取消失败!");
+            }
+        }
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
+    public Integer orderCancel(String orderNumber) {
+        return pltmOrderDao.orderCancel(orderNumber);
+    }
+
+    public String queryPssOrderNum(String orderNumber) {
+        return pltmOrderDao.queryPssOrderNum(orderNumber);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
+    public Integer pssOrderCancel(String orderNumber) {
+        String pss_orderNum = queryPssOrderNum(orderNumber);
+        System.out.println(pss_orderNum);
+        if (pss_orderNum == null || "".equals(pss_orderNum)) {
+            LOG.debug("PSS订单取消失败！订单编号 --->" + pss_orderNum + "该订单编号非法，没有相关数据！");
+            return 0;
+        }
+        //给pss 发送请求
+        RestTemplate rt = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        MediaType mType = MediaType.parseMediaType("application/json; charset=UTF-8");
+        headers.setContentType(mType);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        LOG.debug("开始发送http请求：地址--->" + orderCancelPssUrl + pss_orderNum);
+        ResponseEntity<String> response = rt.exchange(orderCancelPssUrl + pss_orderNum, HttpMethod.POST, entity, String.class);
+        LOG.debug("http请求响应结果：结果--->" + response.toString());
+
+        if (response != null && response.getStatusCode() == HttpStatus.OK) {
+            JSONObject json = JSONObject.parseObject(response.getBody());
+            String status = json.get("status").toString();
+            System.out.println("李正勇返回result:" + status);
+            if (status != null && status.equals(GlobalConstant.PSS_ORDER_CREATE_OK)) {
+                LOG.debug("PSS订单取消成功！订单编号 --->" + pss_orderNum);
+                return 1;
+            }
+        }
+
+        LOG.debug("PSS订单取消失败！订单编号 --->" + pss_orderNum);
+        return 0;
+
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
+    private Integer queryIsCanceled(String orderNumber) {
+        return pltmOrderDao.queryIsCanceled(orderNumber);
+    }
 //
 //    @Override
 //    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
@@ -886,7 +927,7 @@ public class OrderServiceImpl implements OrderServiceI {
 //        if (StringUtils.isEmpty(contractNo)) {//非合同订单返回单价×订单人数
 //            result = unitPrice * order.getPurchQuantity();
 //        } else {
-//            logger.debug("contractPassNo:" + contractPassNo + "; passCount:" + passCount + "; unitPrice:" + unitPrice + "; ticketRate:" + ticketRate + "; ticketLoss:" + ticketLoss);
+//            LOG.debug("contractPassNo:" + contractPassNo + "; passCount:" + passCount + "; unitPrice:" + unitPrice + "; ticketRate:" + ticketRate + "; ticketLoss:" + ticketLoss);
 //            if (contractPassNo != null && passCount != null) {
 //                if (passCount.equals(0)) {
 //                    result = unitPrice * passCount; //票价 * 出票人数
